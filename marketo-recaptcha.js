@@ -99,12 +99,11 @@
    */
   MktoForms2.whenReady(function (mktoForm) {
     // Avoid processing forms more than once.
-    var formId = mktoForm.getId();
-    if (typeof mktoForms[formId] !== "undefined") {
+    var formElem = mktoForm.getFormElem();
+    if (formElem[0].getAttribute('data-recaptcha-processed') !== null) {
       return;
     }
-
-    mktoForms[formId] = 'processed';
+    formElem[0].setAttribute('data-recaptcha-processed', 'processed');
 
     var values = mktoForm.getValues();
     // Recaptcha is not enabled for this form.
@@ -113,11 +112,15 @@
     }
 
     mktoForm.onValidate(function() {
+      if (recaptchaWidgetId === null) {
+        return;
+      }
       mktoForm.submittable(false);
 
       if (recaptchaToken !== null) {
         mktoForm.vals({"spamCheck" : recaptchaToken});
         mktoForm.submittable(true);
+        mktoForm.submit();
       }
       else {
         grecaptcha.execute(recaptchaWidgetId);
@@ -125,6 +128,7 @@
           if (typeof e.detail.token !== 'undefined' && e.detail.token.length) {
             mktoForm.vals({"spamCheck" : e.detail.token});
             mktoForm.submittable(true);
+            mktoForm.submit();
           }
         });
       }
