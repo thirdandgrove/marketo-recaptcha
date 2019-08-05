@@ -15,7 +15,11 @@
   if (typeof recaptchaSiteKey === 'undefined') {
     throw "Recaptcha site key is required."
   }
+  if (typeof window.marketoRecaptchaProcessed !== 'undefined') {
+    return;
+  }
 
+  window.marketoRecaptchaProcessed = true;
   var recaptchaLoaded = false;
   var recaptchaToken = null;
   var recaptchaWidgetId = null;
