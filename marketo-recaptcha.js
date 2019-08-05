@@ -112,9 +112,16 @@
     }
 
     mktoForm.onValidate(function() {
+      // No recaptcha widget or it failed to render - allow the form to pass.
       if (recaptchaWidgetId === null) {
         return;
       }
+      // Recaptcha is already supplied.
+      if (mktoForm.vals().spamCheck === recaptchaToken) {
+        return;
+      }
+
+      // Form is not submittable without recaptcha token.
       mktoForm.submittable(false);
 
       if (recaptchaToken !== null) {
